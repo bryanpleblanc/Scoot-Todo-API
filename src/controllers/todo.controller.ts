@@ -12,7 +12,9 @@ export class TodosController {
   @Get('/todos')
   @OpenAPI({ summary: 'Return a list of todos' })
   async getTodos() {
+    console.log('entry');
     const findAllTodosData: Todo[] = await this.todoService.findAllTodo();
+    console.log('TEST', findAllTodosData);
     return { data: findAllTodosData, message: 'findAll' };
   }
 
