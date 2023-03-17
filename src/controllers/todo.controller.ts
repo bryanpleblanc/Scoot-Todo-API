@@ -12,25 +12,24 @@ export class TodosController {
   @Get('/todos')
   @OpenAPI({ summary: 'Return a list of todos' })
   async getTodos() {
-    console.log('entry');
     const findAllTodosData: Todo[] = await this.todoService.findAllTodo();
-    console.log('TEST', findAllTodosData);
     return { data: findAllTodosData, message: 'findAll' };
   }
 
   @Post('/todos')
   @HttpCode(201)
-  @UseBefore(validationMiddleware(CreateTodoDto, 'body'))
+  //@UseBefore(validationMiddleware(CreateTodoDto, 'body'))
   @OpenAPI({ summary: 'Create a new todo' })
   async createTodo(@Body() todoData: Todo) {
+    console.log(todoData);
     await this.todoService.createTodo(todoData);
     return { message: 'created' };
   }
 
   @Delete('/todos/:id')
   @OpenAPI({ summary: 'Delete a todo' })
-  async deleteTodo(@Param('id') todoId: number) {
-    await this.todoService.deleteTodo(todoId);
+  async deleteTodo(@Param('id') id: string) {
+    await this.todoService.deleteTodo(id);
     return { message: 'deleted' };
   }
 }
