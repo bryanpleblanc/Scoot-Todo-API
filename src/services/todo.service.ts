@@ -1,17 +1,34 @@
 import { HttpException } from '@exceptions/HttpException';
-import { Todo } from '@interfaces/todo.interface';
+import { Todo, TodoList } from '@interfaces/todo.interface';
 import fs from 'fs';
 import path from 'path';
 
 const filePath = '../../data/todos.json';
 const pathToFile = path.resolve(__dirname, filePath);
 class TodoService {
-  public async findAllTodo(): Promise<Todo[]> {
+  public async findAllTodo(): Promise<TodoList> {
     try {
       const data = await fs.promises.readFile(pathToFile);
       const todoData = JSON.parse(data.toString());
       return todoData;
     } catch (e) {
+      throw new HttpException(400, 'file not found');
+    }
+  }
+
+  public async findTodoByQuery(query?: string): Promise<TodoList> {
+    try {
+      const data = await fs.promises.readFile(pathToFile);
+      const todoData = JSON.parse(data.toString());
+
+      console.log(query);
+      const filtered: Todo[] = todoData.todos.filter(todo => {
+        return todo.title.includes(query) || todo.description.includes(query) || todo.priority.includes(query);
+      });
+
+      return { todos: filtered };
+    } catch (e) {
+      console.log(e);
       throw new HttpException(400, 'file not found');
     }
   }

@@ -1,9 +1,7 @@
-import { Controller, Param, Body, Get, Post, Delete, HttpCode, UseBefore } from 'routing-controllers';
+import { Controller, Param, Body, Get, Post, Delete, HttpCode } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
-import { CreateTodoDto } from '@dtos/todo.dto';
-import { Todo } from '@interfaces/todo.interface';
+import { Todo, TodoList } from '@interfaces/todo.interface';
 import TodoService from '@services/todo.service';
-import { validationMiddleware } from '@middlewares/validation.middleware';
 
 @Controller()
 export class TodosController {
@@ -12,16 +10,21 @@ export class TodosController {
   @Get('/todos')
   @OpenAPI({ summary: 'Return a list of todos' })
   async getTodos() {
-    const findAllTodosData: Todo[] = await this.todoService.findAllTodo();
+    const findAllTodosData: TodoList = await this.todoService.findAllTodo();
     return { data: findAllTodosData, message: 'findAll' };
+  }
+
+  @Get('/todos/query/:query')
+  @OpenAPI({ summary: 'Return a list of todos' })
+  async getTodosByQuery(@Param('query') query: string) {
+    const todosData: TodoList = await this.todoService.findTodoByQuery(query);
+    return { data: todosData, message: 'findAll' };
   }
 
   @Post('/todos')
   @HttpCode(201)
-  //@UseBefore(validationMiddleware(CreateTodoDto, 'body'))
   @OpenAPI({ summary: 'Create a new todo' })
   async createTodo(@Body() todoData: Todo) {
-    console.log(todoData);
     await this.todoService.createTodo(todoData);
     return { message: 'created' };
   }
